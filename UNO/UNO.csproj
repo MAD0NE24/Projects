@@ -55,6 +55,7 @@
     <Compile Include="Cards.cs" />
     <Compile Include="Create Deck.cs" />
     <Compile Include="Players.cs" />
+    <Compile Include="Playhand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

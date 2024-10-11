@@ -15,6 +15,8 @@ namespace UNO
         public static List<Players> Playerlist = new List<Players>();
 
         static int numberofplayers;
+        public static int currentplayer = 0;
+        public static int gamedirection = 0;
         static void Main(string[] args)
         {           
             ShuffleDeck();
@@ -58,15 +60,38 @@ namespace UNO
                 }
             }
 
-            foreach(Players player in Playerlist)
+            DealFirstCard();
+
+            while(true)
             {
-                Console.WriteLine("Player " + player.playernumber + " hand:");
-                foreach(Cards card in player.playerhand)
+                Console.Clear();
+                Players templayer;
+                Cards playedcard;
+                Playhand.Play(Playerlist[currentplayer].playername, PlayedDeck[PlayedDeck.Count - 1], Playerlist[currentplayer], gamedirection, out gamedirection, out templayer, out playedcard);
+                Playerlist[currentplayer] = templayer;
+                PlayedDeck.Add(playedcard);
+                if (Playerlist[currentplayer].playerhand.Count == 0)
                 {
-                    SetConsoleColour(card.Colour);
-                    Console.WriteLine(card.Colour + " " + card.Effect);
-                    Console.ResetColor();
+                    Console.WriteLine("UNO! \nPlayer" + (currentplayer + 1) + " wins!");
+                    break;
                 }
+                else if(gamedirection == 0)
+                {
+                    currentplayer++;
+                    if(currentplayer == numberofplayers)
+                    {
+                        currentplayer = 0;
+                    }
+                }
+                else if (gamedirection == 1)
+                {
+                    currentplayer--;
+                    if (currentplayer == -1)
+                    {
+                        currentplayer = numberofplayers - 1;
+                    }
+                }
+
             }
 
 
@@ -78,6 +103,27 @@ namespace UNO
         {
             Playerlist[playernumber].playerhand.Add(ShuffledDeck[0]);
             ShuffledDeck.RemoveAt(0);
+        }
+
+        static void DealFirstCard()
+        {
+            Cards firstcard = ShuffledDeck[0];
+            if(firstcard.Colour == "black" || firstcard.Effect == "Skip" || firstcard.Effect == "+2" || firstcard.Effect == "Reverse")
+            {
+                int i = 1;
+                while (ShuffledDeck[i].Colour == "black" || ShuffledDeck[i].Effect == "Skip" || ShuffledDeck[i].Effect == "+2" || ShuffledDeck[i].Effect == "Reverse")
+                {
+                    i++;
+                }
+                firstcard = ShuffledDeck[i];
+                ShuffledDeck.RemoveAt(i);
+                PlayedDeck.Add(firstcard);
+            }
+            else
+            {
+                ShuffledDeck.RemoveAt(0);
+                PlayedDeck.Add(firstcard);
+            }
         }
 
         static void ShuffleDeck()
